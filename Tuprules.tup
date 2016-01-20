@@ -1,0 +1,7 @@
+CFLAGS += -Wall
+CFLAGS += -O2
+CFLAGS += @(COMPILER_FLAGS)
+
+
+
+!cc = |> @(COMPILER) $(CFLAGS) %f -o %o |> %B.bc
