@@ -1,7 +1,6 @@
 CFLAGS += -Wall
-CFLAGS += -O2
 CFLAGS += @(COMPILER_FLAGS)
 
-
-
 !cc = |> @(COMPILER) $(CFLAGS) %f -c |> %B.o
+
+.gitignore
