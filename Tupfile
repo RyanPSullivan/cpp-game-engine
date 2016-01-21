@@ -1,5 +1,5 @@
 include_rules
 
-: src/*.bc src/duktape/*.bc |> @(COMPILER) %f -o application.html |> application.html application.js
+: src/*.o src/duktape/*.o |> @(COMPILER) %f -o application.html |> application.html application.js
 
 .gitignore

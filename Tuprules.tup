@@ -4,4 +4,4 @@ CFLAGS += @(COMPILER_FLAGS)
 
 
 
-!cc = |> @(COMPILER) $(CFLAGS) %f -o %o |> %B.bc
+!cc = |> @(COMPILER) $(CFLAGS) %f -c |> %B.o
