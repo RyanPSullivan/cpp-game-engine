@@ -1,6 +1,7 @@
 CFLAGS += -Wall
+CFLAGS += -std=c++11
 CFLAGS += @(COMPILER_FLAGS)
 
-!cc = |> @(COMPILER) $(CFLAGS) %f -std=c++11 -c|> %B.o
+!cc = |> @(COMPILER) $(CFLAGS) %f  -c|> %B.o
 
 .gitignore
