@@ -1,0 +1,129 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sat Jan 30 16:27:28 2016
+;; Desktop file format version 206
+;; Emacs version 24.5.1
+
+;; Global section:
+(setq desktop-saved-frameset nil)
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list '("/home/ryans/repositories/github/cpp-game-engine/TAGS"))
+(setq search-ring '("sincos"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/repositories/github/cpp-game-engine/build-g++/.gitignore" "~/repositories/github/cpp-game-engine/.git" "~/repositories/github/cpp-game-engine/build-em++/tup.config" "~/repositories/github/cpp-game-engine/build-g++" "~/repositories/github/cpp-game-engine/src/" "~/repositories/github/cpp-game-engine/src/**/**" "~/repositories/github/cpp-game-engine/src/test.cpp" "~/repositories/github/cpp-game-engine/**/**.cpp" "~/repositories/github/cpp-game-engine/*/*.cpp" "~/**/**.c" "/home/ryans/repositories/github/cpp-game-engine"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/build-g++/.gitignore"
+  ".gitignore"
+  'fundamental-mode
+  nil
+  121
+  '(121 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/.emacs-ide-project.cfg"
+  ".emacs-ide-project.cfg"
+  'emacs-ide-config-mode
+  nil
+  3214
+  '(771 nil)
+  nil
+  nil
+  '((show-trailing-whitespace) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/build-g++/tup.config"
+  "tup.config"
+  'conf-unix-mode
+  nil
+  85
+  '(51 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/build-em++/tup.config"
+  "tup.config"
+  'conf-unix-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/test.cpp"
+  "test.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  1844
+  '(11739 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/duktape/LICENSE.txt"
+  "LICENSE.txt"
+  'text-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/duktape/Tupfile"
+  "Tupfile"
+  'fundamental-mode
+  nil
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/duktape/duk_config.h"
+  "duk_config.h"
+  'c-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/duktape/duktape.c"
+  "duktape.c"
+  'c-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/ryans/repositories/github/cpp-game-engine/src/duktape/duktape.h"
+  "duktape.h"
+  'c-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+

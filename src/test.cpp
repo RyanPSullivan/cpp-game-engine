@@ -38,7 +38,7 @@
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 
 #include <math.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@
 #define GEAR_VERTEX_STRIDE 6
 
 
-void sincos( double x, double* a, double* b )
+void sincos1( double x, double* a, double* b )
 {
   (*a) = sin(x);
   (*b) = cos(x);
@@ -186,11 +186,11 @@ create_gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 
    for (i = 0; i < teeth; i++) {
       /* Calculate needed sin/cos for varius angles */
-      sincos(i * 2.0 * M_PI / teeth, &s[0], &c[0]);
-      sincos(i * 2.0 * M_PI / teeth + da, &s[1], &c[1]);
-      sincos(i * 2.0 * M_PI / teeth + da * 2, &s[2], &c[2]);
-      sincos(i * 2.0 * M_PI / teeth + da * 3, &s[3], &c[3]);
-      sincos(i * 2.0 * M_PI / teeth + da * 4, &s[4], &c[4]);
+      sincos1(i * 2.0 * M_PI / teeth, &s[0], &c[0]);
+      sincos1(i * 2.0 * M_PI / teeth + da, &s[1], &c[1]);
+      sincos1(i * 2.0 * M_PI / teeth + da * 2, &s[2], &c[2]);
+      sincos1(i * 2.0 * M_PI / teeth + da * 3, &s[3], &c[3]);
+      sincos1(i * 2.0 * M_PI / teeth + da * 4, &s[4], &c[4]);
 
       /* A set of macros for making the creation of the gears easier */
 #define  GEAR_POINT(r, da) { (float)((r) * c[(da)], (r) * s[(da)]) }
@@ -333,7 +333,7 @@ rotate(GLfloat *m, GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
    double s1, c1;
 
-   sincos(angle, &s1, &c1);
+   sincos1(angle, &s1, &c1);
 
    GLfloat s = (GLfloat)s1;
    GLfloat c = (GLfloat)c1;
@@ -445,7 +445,7 @@ void perspective(GLfloat *m, GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloa
    GLfloat radians = fovy / 2 * M_PI / 180;
 
    deltaZ = zFar - zNear;
-   sincos(radians, &sine, &cosine);
+   sincos1(radians, &sine, &cosine);
 
    if ((deltaZ == 0) || (sine == 0) || (aspect == 0))
       return;
