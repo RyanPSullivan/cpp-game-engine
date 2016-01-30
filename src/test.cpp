@@ -69,8 +69,7 @@ void sincos( double x, double* a, double* b )
   (*a) = sin(x);
   (*b) = cos(x);
 }
-osf(x);
-}
+
 
 /**
  * Struct describing the vertices in triangle strip
@@ -332,9 +331,13 @@ multiply(GLfloat *m, const GLfloat *n)
 static void
 rotate(GLfloat *m, GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
-   double s, c;
+   double s1, c1;
 
-   sincos(angle, &s, &c);
+   sincos(angle, &s1, &c1);
+
+   GLfloat s = (GLfloat)s1;
+   GLfloat c = (GLfloat)c1;
+   
    GLfloat r[16] = {
       x * x * (1 - c) + c,     y * x * (1 - c) + z * s, x * z * (1 - c) - y * s, 0,
       x * y * (1 - c) - z * s, y * y * (1 - c) + c,     y * z * (1 - c) + x * s, 0, 
