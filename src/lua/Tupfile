@@ -1,0 +1,49 @@
+include_rules
+
+srcs += src/lapi.c
+srcs += src/lcode.c
+srcs += src/lctype.c
+srcs += src/ldebug.c
+srcs += src/ldo.c
+srcs += src/ldump.c
+srcs += src/lfunc.c
+srcs += src/lgc.c
+srcs += src/llex.c
+srcs += src/lmem.c
+srcs += src/lobject.c
+srcs += src/lopcodes.c
+srcs += src/lparser.c
+srcs += src/lstate.c
+srcs += src/lstring.c
+srcs += src/ltable.c
+srcs += src/ltm.c
+srcs += src/lundump.c
+srcs += src/lvm.c
+srcs += src/lzio.c
+srcs += src/lauxlib.c
+srcs += src/lbaselib.c
+srcs += src/lbitlib.c
+srcs += src/lcorolib.c
+srcs += src/ldblib.c
+srcs += src/liolib.c
+srcs += src/lmathlib.c
+srcs += src/loslib.c
+srcs += src/lstrlib.c
+srcs += src/ltablib.c
+srcs += src/loadlib.c
+srcs += src/linit.c
+srcs += src/lutf8lib.c
+
+CFLAGS += -DLUA_COMPAT_ALL
+CFLAGS += -DLUA_USE_MKSTEMP
+CFLAGS += -w
+
+: foreach $(srcs) |> !cc |> {objs}
+
+: {objs} |> !ar |> liblua.a
+
+: foreach src/lua.c |> !cc |>
+
+LDFLAGS += -lm
+
+: lua.o liblua.a |> !ld |> lua
