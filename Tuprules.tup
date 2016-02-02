@@ -1,6 +1,13 @@
 CFLAGS += -Wall
 CFLAGS += -std=c++11
-CFLAGS += @(COMPILER_FLAGS)
+
+ifeq (@(TUP_PLATFORM),macosx) 
+  CFLAGS += @(COMPILER_FLAGS_macosx)
+endif
+
+ifeq (@(TUP_PLATFORM),linux) 
+  CFLAGS += @(COMPILER_FLAGS_linux)
+endif
 
 !cc = |> @(COMPILER) $(CFLAGS) %f  -c|> %B.o
 
