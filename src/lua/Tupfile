@@ -42,8 +42,7 @@ CFLAGS += -w
 
 : {objs} |> !ar |> liblua.a
 
-: foreach src/lua.c |> !cc |>
-
-LDFLAGS += -lm
-
-: lua.o liblua.a |> !ld |> lua
+### Uncomment the three lines below to compile a lua repl ###
+#: foreach src/lua.c |> !cc |>
+#LDFLAGS += -lm
+#: lua.o liblua.a |> !ld |> lua

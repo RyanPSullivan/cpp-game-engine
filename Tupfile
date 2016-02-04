@@ -1,3 +1,5 @@
 include_rules
 
-: src/*.o src/duktape/*.o |> @(COMPILER) $(CFLAGS) %f -o @(OUTPUTFILE) |> @(OUTPUTFILE) 
+#: foreach src/lua.c |> !cc |>
+
+: src/*.o src/lua/liblua.a |> !ld |> @(OUTPUTFILE)
