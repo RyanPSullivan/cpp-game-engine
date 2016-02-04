@@ -9,7 +9,7 @@ int main (void)
   int error;
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
-
+  
   auto buff = "io.write(\"Hello World\")";
 
   error = luaL_loadbuffer(L, buff, strlen(buff), "line") || lua_pcall(L, 0, 0, 0);

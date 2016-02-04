@@ -1,15 +1,6 @@
 CFLAGS += -Wall
 CFLAGS += -std=c++11
 
-ifeq (@(TUP_PLATFORM),macosx) 
-  CFLAGS += @(COMPILER_FLAGS_macosx)
-endif
-
-ifeq (@(TUP_PLATFORM),linux) 
-  CFLAGS += @(COMPILER_FLAGS_linux)
-endif
-
-
 ifeq (@(TUP_32_BIT),y)
 CFLAGS += -m32
 LDFLAGS += -m32
@@ -19,6 +10,6 @@ endif
 !ar = |> ^ AR %o^ ar crs %o %f |>
 !ld = |> ^ LINK %o^ @(COMPILER) %f -o %o $(LDFLAGS) $(LDFLAGS_%o) |>
 
-#include @(TUP_PLATFORM).tup
+include @(TUP_PLATFORM).tup
 
 .gitignore

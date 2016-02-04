@@ -1,0 +1,1 @@
+CFLAGS+=-framework GLUT -framework OpenGL
