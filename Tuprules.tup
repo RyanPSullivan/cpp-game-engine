@@ -10,6 +10,6 @@ endif
 !ar = |> ^ AR %o^ ar crs %o %f |>
 !ld = |> ^ LINK %o^ @(COMPILER) %f -o %o $(LDFLAGS) $(LDFLAGS_%o) |>
 
-include @(TUP_PLATFORM).tup
+include @(COMPILER)_@(TUP_PLATFORM).tup
 
 .gitignore
