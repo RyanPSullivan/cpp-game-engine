@@ -1,21 +1,19 @@
+
 #include <stdio.h>
 #include <string.h>
 #include "lua/src/lua.h"
 #include "lua/src/lualib.h"
 #include "lua/src/lauxlib.h"
 
+#include <emscripten/emscripten.h>
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <Glut/glut.h>
 #else
+#include <GL/glfw.h>
 #include <GL/gl.h>
-#include <GL/glut.h>
 #endif
-
-void DoNothing()
-{
-
-}
 
 void ReSizeWindow( int with, int height )
 {
@@ -24,21 +22,30 @@ void ReSizeWindow( int with, int height )
 
 int CreateWindow(lua_State* L)
 {
-  
-  glutInitWindowSize(300, 300);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  glutCreateWindow("es2gears");
-     glutIdleFunc (DoNothing);
-   glutReshapeFunc(ReSizeWindow);
-   glutDisplayFunc(DoNothing);
 
-  return 0;
+    const int width = 480,
+             height = 800;
+ 
+    if (glfwInit() != GL_TRUE) {
+        printf("glfwInit() failed\n");
+        return 0;
+    }
+ 
+    if (glfwOpenWindow(width, height, 8, 8, 8, 8, 16, 0, GLFW_WINDOW) != GL_TRUE) {
+        printf("glfwOpenWindow() failed\n");
+        return 0;
+    }
+ 
+    return 1;
 }
 
+void do_frame()
+{
+}
 
 int main (int argc, char *argv[])
 {
-  glutInit(&argc, argv);
+//  glutInit(&argc, argv);
   int error;
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
@@ -62,7 +69,8 @@ int main (int argc, char *argv[])
   }
   else
   {
-    glutMainLoop();
+	  emscripten_set_main_loop(do_frame, 0, 1);
+	  // glutMainLoop();
   }
   
   
