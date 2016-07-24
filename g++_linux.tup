@@ -1,1 +1,1 @@
-LDFLAGS+=-lGL -lglut
+LDFLAGS+=-lSDL -lGLEW -lGL

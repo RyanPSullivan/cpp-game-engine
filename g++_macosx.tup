@@ -1,1 +1,1 @@
-LDFLAGS+=-framework GLUT -framework OpenGL
+LDFLAGS+=-framework GLEW -framework OpenGL
