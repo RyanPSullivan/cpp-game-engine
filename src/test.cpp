@@ -2,6 +2,7 @@
 #include "lua/src/lualib.h"
 #include "lua/src/lauxlib.h"
 
+
 #ifndef __EMSCRIPTEN__
 #define USE_GLEW 1
 #endif
@@ -24,6 +25,8 @@
 #include <string.h>
 #include <iostream>
 #include <assert.h>
+#include "lgllib.cpp"
+
 
 static const GLfloat g_vertex_buffer_data[] = {
    -1.0f, -1.0f, 0.0f,
@@ -33,12 +36,12 @@ static const GLfloat g_vertex_buffer_data[] = {
 
 void draw()
 {
-glClearColor( 0, 0, 0, 0 );
+    glClearColor( 0, 0, 0, 0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-GLuint VertexArrayID;
-glGenVertexArrays(1, &VertexArrayID);
-glBindVertexArray(VertexArrayID);
+    GLuint VertexArrayID;
+    glGenVertexArrays(1, &VertexArrayID);
+    glBindVertexArray(VertexArrayID);
 
 // This will identify our vertex buffer
 GLuint vertexbuffer;
@@ -70,6 +73,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 
 int CreateWindow(lua_State* L)
 {
+	luaopen_gl(L);
     SDL_Surface *screen;
     if ( SDL_Init(SDL_INIT_VIDEO) != 0 ) {
         printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -195,6 +199,10 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 	return ProgramID;
 }
 
+int time_to_next_frame()
+{
+	return 16;
+}
 
 int main (int argc, char *argv[])
 {
@@ -224,8 +232,13 @@ int main (int argc, char *argv[])
 
 #if EMSCRIPTEN
 	  emscripten_set_main_loop(draw, 0, 1);
-	  // glutMainLoop();
-  #endif
+#else
+  while (true) {
+    draw();
+    // Delay to keep frame rate constant (using SDL)
+    SDL_Delay(time_to_next_frame());
+  }
+#endif
   
   
 
