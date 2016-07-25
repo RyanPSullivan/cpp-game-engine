@@ -1,4 +1,5 @@
 //A lua wrapper around opengl methods
+#include "lgllib.h"
 #ifndef __EMSCRIPTEN__
 #define USE_GLEW 1
 #endif
@@ -13,7 +14,7 @@
 #include "SDL/SDL_opengl.h"
 #endif
 
-#include "lua/src/lua.h"
+
 #include "lua/src/lauxlib.h"
 #include "lua/src/lualib.h"
 
@@ -37,7 +38,7 @@ static int glClear(lua_State *L)
 static int gl_GenVertexArrays(lua_State *L)
 {
 	auto num  = luaL_checkinteger(L, 1);
-	
+
 	GLuint* arrays = new GLuint[num];
 	glGenVertexArrays(num,arrays);
 
@@ -66,4 +67,3 @@ LUAMOD_API int luaopen_gl (lua_State *L) {
 
   return 1;
 }
-	

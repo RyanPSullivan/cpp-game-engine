@@ -1,1 +1,1 @@
-LDFLAGS+=-framework GLEW -framework OpenGL
+LDFLAGS+=-lSDL -lGLEW -framework OpenGL `sdl-config --cflags --libs`

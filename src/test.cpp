@@ -1,11 +1,15 @@
+
+//#include "lgllib.cpp"
 #include "lua/src/lua.h"
 #include "lua/src/lualib.h"
 #include "lua/src/lauxlib.h"
+#include "lgllib.h"
 
 
 #ifndef __EMSCRIPTEN__
 #define USE_GLEW 1
 #endif
+
 
 #if EMSCRIPTEN
 #include <emscripten/emscripten.h>
@@ -25,7 +29,7 @@
 #include <string.h>
 #include <iostream>
 #include <assert.h>
-#include "lgllib.cpp"
+
 
 
 static const GLfloat g_vertex_buffer_data[] = {
@@ -43,37 +47,39 @@ void draw()
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-// This will identify our vertex buffer
-GLuint vertexbuffer;
-// Generate 1 buffer, put the resulting identifier in vertexbuffer
-glGenBuffers(1, &vertexbuffer);
-// The following commands will talk about our 'vertexbuffer' buffer
-glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-// Give our vertices to OpenGL.
-glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    // This will identify our vertex buffer
+    GLuint vertexbuffer;
+    // Generate 1 buffer, put the resulting identifier in vertexbuffer
+    glGenBuffers(1, &vertexbuffer);
+    // The following commands will talk about our 'vertexbuffer' buffer
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    // Give our vertices to OpenGL.
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-// 1rst attribute buffer : vertices
-glEnableVertexAttribArray(0);
-glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-glVertexAttribPointer(
-   0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-   3,                  // size
-   GL_FLOAT,           // type
-   GL_FALSE,           // normalized?
-   0,                  // stride
-   (void*)0            // array buffer offset
-);
-// Draw the triangle !
-glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-glDisableVertexAttribArray(0);
-printf("x");
+    // 1rst attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glVertexAttribPointer(
+       0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+       3,                  // size
+       GL_FLOAT,           // type
+       GL_FALSE,           // normalized?
+       0,                  // stride
+       (void*)0            // array buffer offset
+    );
+
+    // Draw the triangle !
+    glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    glDisableVertexAttribArray(0);
+
+SDL_GL_SwapBuffers();
 }
 
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
 
 int CreateWindow(lua_State* L)
 {
-	luaopen_gl(L);
+	 luaopen_gl(L);
     SDL_Surface *screen;
     if ( SDL_Init(SDL_INIT_VIDEO) != 0 ) {
         printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -87,6 +93,7 @@ int CreateWindow(lua_State* L)
         return 1;
     }
 #if USE_GLEW
+    glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (GLEW_OK != err)
     {
@@ -94,30 +101,23 @@ int CreateWindow(lua_State* L)
 	    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 	    exit(1);
     }
-    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));    
+    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 
-   
+
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
-   
-   
+
+
 
     glUseProgram(programID);
 
-        
+
     // BEGIN
     draw();
     // END
-   
-    SDL_GL_SwapBuffers();
 
-   
-#ifndef __EMSCRIPTEN__
-    SDL_Delay(1500);
-#endif
-   
-    SDL_Quit();
-   
+    //SDL_Quit();
+
     return 0;
 }
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
@@ -134,7 +134,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 	// Read the Fragment shader code from the file
 	std::string FragmentShaderCode =
 		"\n \
-                void main(){gl_FragColor = vec4(1,0,0,0);}";
+                void main(){gl_FragColor = vec4(0,1,0,0);}";
 
 	GLint Result = GL_FALSE;
 	int InfoLogLength;
@@ -189,10 +189,9 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 		printf("%s\n", &ProgramErrorMessage[0]);
 	}
 
-	printf("WHAT");
 	glDetachShader(ProgramID, VertexShaderID);
 	glDetachShader(ProgramID, FragmentShaderID);
-	
+
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 
@@ -220,10 +219,10 @@ int main (int argc, char *argv[])
   //Register Create Window Function
   lua_register(L, "CreateWindow", CreateWindow);
 
-  auto buff = "io.write(\"Hello The World\");\nCreateWindow();";
+  auto buff = "io.write(\"Hello The World\\n\");\nCreateWindow();";
 
   error = luaL_loadbuffer(L, buff, strlen(buff), "line") || lua_pcall(L, 0, 0, 0);
-  if (error) 
+  if (error)
   {
     fprintf(stderr, "%s", lua_tostring(L, -1));
     lua_pop(L, 1);  /* pop error message from the stack */
@@ -233,14 +232,28 @@ int main (int argc, char *argv[])
 #if EMSCRIPTEN
 	  emscripten_set_main_loop(draw, 0, 1);
 #else
-  while (true) {
-    draw();
-    // Delay to keep frame rate constant (using SDL)
-    SDL_Delay(time_to_next_frame());
+  SDL_Event e;
+  bool quit = false;
+  while (!quit){
+      while (SDL_PollEvent(&e)){
+          if (e.type == SDL_QUIT){
+              quit = true;
+          }
+          if (e.type == SDL_KEYDOWN){
+              quit = true;
+          }
+          if (e.type == SDL_MOUSEBUTTONDOWN){
+              quit = true;
+          }
+      }
+
+        draw();
   }
 #endif
-  
-  
+
+SDL_Quit();
+
+
 
   lua_close(L);
   return 0;
