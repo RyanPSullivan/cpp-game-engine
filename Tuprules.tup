@@ -1,6 +1,7 @@
 CFLAGS += -Wall
 CFLAGS += -std=c++11
 CFLAGS += -g
+CFLAGS += -ferror-limit=10000
 
 ifeq (@(TUP_32_BIT),y)
 CFLAGS += -m32

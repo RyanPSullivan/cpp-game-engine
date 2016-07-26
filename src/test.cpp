@@ -1,28 +1,23 @@
-
-//#include "lgllib.cpp"
 #include "lua/src/lua.h"
 #include "lua/src/lualib.h"
 #include "lua/src/lauxlib.h"
-#include "lgllib.h"
-
-
-#ifndef __EMSCRIPTEN__
-#define USE_GLEW 1
-#endif
+#include "luagl.h"
 
 
 #if EMSCRIPTEN
 #include <emscripten/emscripten.h>
-#endif
-
-#if USE_GLEW
-#include "GL/glew.h"
+#else
+#define USE_GLEW 1
 #endif
 
 #include "SDL/SDL.h"
-#if !USE_GLEW
+
+#if USE_GLEW
+#include "GL/glew.h"
+#else
 #include "SDL/SDL_opengl.h"
 #endif
+
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,14 +67,14 @@ void draw()
     glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
     glDisableVertexAttribArray(0);
 
-SDL_GL_SwapBuffers();
+    SDL_GL_SwapBuffers();
 }
 
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
 
 int CreateWindow(lua_State* L)
 {
-	 luaopen_gl(L);
+	 luaL_opengl(L);
     SDL_Surface *screen;
     if ( SDL_Init(SDL_INIT_VIDEO) != 0 ) {
         printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -107,16 +102,8 @@ int CreateWindow(lua_State* L)
 
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
 
-
-
     glUseProgram(programID);
 
-
-    // BEGIN
-    draw();
-    // END
-
-    //SDL_Quit();
 
     return 0;
 }
@@ -172,7 +159,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
 		printf("%s\n", &FragmentShaderErrorMessage[0]);
 	}
 
-
 	// Link the program
 	printf("Linking program\n");
 	GLuint ProgramID = glCreateProgram();
@@ -209,11 +195,6 @@ int main (int argc, char *argv[])
   int error;
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
-
-
-   /* Set up glut callback functions */
-
-   //glutSpecialFunc(DoNothing);
 
 
   //Register Create Window Function
