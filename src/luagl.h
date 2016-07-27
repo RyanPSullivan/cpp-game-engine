@@ -26,7 +26,7 @@ SOFTWARE.
 #define __LUAGL_H__
 #include "lua/src/lua.h"
 
-int luaL_opengl(lua_State *lua);
+LUAMOD_API int luaL_opengl(lua_State *lua);
 
 #endif
 

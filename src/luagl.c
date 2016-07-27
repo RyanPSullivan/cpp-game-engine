@@ -59,6 +59,39 @@ SOFTWARE.
 #define OPENGL_2_1 1
 #define OPENGL_2_0 1
 
+static double* checkarray_double(lua_State *L, int narg, int *len_out) {
+    luaL_checktype(L, narg, LUA_TTABLE);
+
+		int top = lua_gettop(L);
+		int diff = top - narg;
+    int len = lua_rawlen(L, narg);
+    *len_out = len;
+    double *buff = (double*)malloc(len*sizeof(double));
+
+    for(int i = 0; i < len; i++) {
+        lua_pushinteger(L, i+1);
+	      lua_gettable(L, -2 - diff);
+        if(lua_isnumber(L, -1)) {
+            buff[i] = lua_tonumber(L, -1);
+        } else {
+            lua_pushfstring(L,
+                strcat(
+                    strcat(
+                        "invalid entry #%d in array argument #%d (expected number, got ",
+                        luaL_typename(L, -1)
+                    ),
+                    ")"
+                ),
+                i, narg
+            );
+            lua_error(L);
+        }
+        lua_pop(L, 1);
+    }
+
+    return buff;
+}
+
 static int lua_glDataToTable(lua_State *lua)
 {
 	size_t size = 0;
@@ -325,15 +358,15 @@ static int lua_glNamedBufferStorage(lua_State *lua)
 
 static int lua_glBufferData(lua_State *lua)
 {
-	const char *data = NULL;
-	size_t data_n = 0;
-	if (lua_isstring(lua, 2)) {
-		data = luaL_checklstring(lua, 2, &data_n);
-		glBufferData(luaL_checkinteger(lua, 1), data_n, data, luaL_checkinteger(lua, 3));
-	} else {
-		luaL_checktype(lua, 2, LUA_TNIL);
-		glBufferData(luaL_checkinteger(lua, 1), 0, NULL, luaL_checkinteger(lua, 3));
-	}
+	int data_n = 0;
+
+	int buffer = luaL_checkinteger(lua, 1);
+	int usage =luaL_checkinteger(lua, 3);
+	double* data = checkarray_double(lua, 2, &data_n);
+
+
+	glBufferData(buffer, data_n, data, usage);
+
 	return 0;
 }
 

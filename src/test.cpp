@@ -35,7 +35,6 @@ static const GLfloat g_vertex_buffer_data[] = {
 
 void draw()
 {
-    glClearColor( 0, 0, 0, 0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     GLuint VertexArrayID;
@@ -67,14 +66,13 @@ void draw()
     glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
     glDisableVertexAttribArray(0);
 
-    SDL_GL_SwapBuffers();
+
 }
 
 GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
 
 int CreateWindow(lua_State* L)
 {
-	 luaL_opengl(L);
     SDL_Surface *screen;
     if ( SDL_Init(SDL_INIT_VIDEO) != 0 ) {
         printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -189,6 +187,16 @@ int time_to_next_frame()
 	return 16;
 }
 
+static int traceback(lua_State *L) {
+  lua_getglobal(L, "debug");
+    lua_getfield(L, -1, "traceback");
+    lua_pushvalue(L, 1);
+    lua_pushinteger(L, 2);
+    lua_call(L, 2, 1);
+    fprintf(stderr, "%s\n", lua_tostring(L, -1));
+    return 1;
+}
+
 int main (int argc, char *argv[])
 {
 
@@ -213,32 +221,41 @@ int main (int argc, char *argv[])
   //close the file its now loaded into a memory buffer
   fclose (file);
 
-
-
-//  glutInit(&argc, argv);
   int error;
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
-
+  luaL_opengl(L);
+lua_pushcfunction(L, traceback);
 
   //Register Create Window Function
   lua_register(L, "CreateWindow", CreateWindow);
 
-  error = luaL_loadbuffer(L, buffer, strlen(buffer), "line") || lua_pcall(L, 0, 0, 0);
-  free (buffer);
+  error = luaL_loadbuffer(L, buffer, strlen(buffer), "line");
+
 
   if (error)
   {
-    fprintf(stderr, "%s", lua_tostring(L, -1));
+    fprintf(stderr, "loadbuffer %s", lua_tostring(L, -1));
     lua_pop(L, 1);  /* pop error message from the stack */
     return -1;
   }
 
+
+  error = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
+
+  if (error)
+  {
+    fprintf(stderr, "pcall %s", lua_tostring(L, -1));
+    lua_pop(L, 1);  /* pop error message from the stack */
+    return -1;
+  }
+SDL_GL_SwapBuffers();
 #if EMSCRIPTEN
-	  emscripten_set_main_loop(draw, 0, 1);
+	  //emscripten_set_main_loop(draw, 0, 1);
 #else
   SDL_Event e;
   bool quit = false;
+
   while (!quit){
       while (SDL_PollEvent(&e)){
           if (e.type == SDL_QUIT){
@@ -252,7 +269,7 @@ int main (int argc, char *argv[])
           }
       }
 
-        draw();
+        //draw();
   }
 #endif
 
