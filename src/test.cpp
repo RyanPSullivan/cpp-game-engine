@@ -191,6 +191,30 @@ int time_to_next_frame()
 
 int main (int argc, char *argv[])
 {
+
+  //load lua scripts
+  FILE *file = fopen("lua/draw.lua", "rb");
+
+  if (file==NULL) {fputs ("File error",stderr); return 1;}
+
+  // obtain file size:
+  fseek (file , 0 , SEEK_END);
+  auto lSize = ftell (file);
+  rewind (file);
+
+  // allocate memory to contain the whole file:
+  auto buffer = (char*) malloc (sizeof(char)*lSize);
+  if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
+
+  // copy the file into the buffer:
+  auto result = fread (buffer,1,lSize,file);
+  if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+
+  //close the file its now loaded into a memory buffer
+  fclose (file);
+
+
+
 //  glutInit(&argc, argv);
   int error;
   lua_State *L = luaL_newstate();   /* opens Lua */
@@ -200,9 +224,9 @@ int main (int argc, char *argv[])
   //Register Create Window Function
   lua_register(L, "CreateWindow", CreateWindow);
 
-  auto buff = "io.write(\"Hello The World\\n\");\nCreateWindow();";
+  error = luaL_loadbuffer(L, buffer, strlen(buffer), "line") || lua_pcall(L, 0, 0, 0);
+  free (buffer);
 
-  error = luaL_loadbuffer(L, buff, strlen(buff), "line") || lua_pcall(L, 0, 0, 0);
   if (error)
   {
     fprintf(stderr, "%s", lua_tostring(L, -1));
@@ -235,7 +259,7 @@ int main (int argc, char *argv[])
 SDL_Quit();
 
 
-
+  free(buffer);
   lua_close(L);
   return 0;
 }
