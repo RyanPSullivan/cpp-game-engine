@@ -59,14 +59,14 @@ SOFTWARE.
 #define OPENGL_2_1 1
 #define OPENGL_2_0 1
 
-static double* checkarray_double(lua_State *L, int narg, int *len_out) {
+static float* checkarray_float(lua_State *L, int narg, int *len_out) {
     luaL_checktype(L, narg, LUA_TTABLE);
 
 		int top = lua_gettop(L);
 		int diff = top - narg;
     int len = lua_rawlen(L, narg);
     *len_out = len;
-    double *buff = (double*)malloc(len*sizeof(double));
+    float *buff = (float*)malloc(len*sizeof(float));
 
     for(int i = 0; i < len; i++) {
         lua_pushinteger(L, i+1);
@@ -362,10 +362,9 @@ static int lua_glBufferData(lua_State *lua)
 
 	int buffer = luaL_checkinteger(lua, 1);
 	int usage =luaL_checkinteger(lua, 3);
-	double* data = checkarray_double(lua, 2, &data_n);
+	float* data = checkarray_float(lua, 2, &data_n);
 
-
-	glBufferData(buffer, data_n, data, usage);
+	glBufferData(buffer, data_n * sizeof(float), data, usage);
 
 	return 0;
 }
@@ -3067,7 +3066,13 @@ static int lua_glVertexAttribP4uiv(lua_State *lua)
 // VERTEX ARRAYS.
 
 // Vertex Array Objects.
+static void CheckGLErrors()
+{
+  GLenum err ;
 
+  while ( (err = glGetError()) != GL_NO_ERROR )
+    fprintf( stderr, "OpenGL Error: %d\n", err);
+}
 static int lua_glGenVertexArray(lua_State *lua)
 {
 	GLuint vao = 0;
@@ -3183,11 +3188,12 @@ static int lua_glVertexArrayAttribBinding(lua_State *lua)
 
 static int lua_glVertexAttribPointer(lua_State *lua)
 {
-	glVertexAttribPointer(luaL_checkinteger(lua, 1),
+	glVertexAttribPointer(
+		luaL_checkinteger(lua, 1),
 		luaL_checkinteger(lua, 2),
 		luaL_checkinteger(lua, 3),
 		luaL_checkinteger(lua, 4),
-		luaL_checkinteger(lua, 5) * sizeof(GLfloat),
+		luaL_checknumber(lua, 5),
 		NULL);
 	return 0;
 }
