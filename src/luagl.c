@@ -3065,14 +3065,12 @@ static int lua_glVertexAttribP4uiv(lua_State *lua)
 
 // VERTEX ARRAYS.
 
-// Vertex Array Objects.
-static void CheckGLErrors()
+static int lua_glGetError(lua_State* lua )
 {
-  GLenum err ;
-
-  while ( (err = glGetError()) != GL_NO_ERROR )
-    fprintf( stderr, "OpenGL Error: %d\n", err);
+	lua_pushinteger(lua, glGetError());
+	return 1;
 }
+
 static int lua_glGenVertexArray(lua_State *lua)
 {
 	GLuint vao = 0;
@@ -23716,6 +23714,9 @@ int luaL_opengl(lua_State *lua)
 		lua_settable(lua, -3);
 		lua_pushstring(lua, "VertexAttribP4uiv");
 		lua_pushcfunction(lua, lua_glVertexAttribP4uiv);
+		lua_settable(lua, -3);
+		lua_pushstring(lua, "GetError");
+		lua_pushcfunction(lua, lua_glGetError);
 		lua_settable(lua, -3);
 		lua_pushstring(lua, "GenVertexArray");
 		lua_pushcfunction(lua, lua_glGenVertexArray);
