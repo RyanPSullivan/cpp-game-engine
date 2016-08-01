@@ -1485,9 +1485,26 @@ static int lua_glGetShaderInfoLog(lua_State *lua)
 	return 1;
 }
 
-static int lua_glProgramInfoLog(lua_State *lua)
+static int lua_glGetProgramInfoLog(lua_State *lua)
 {
-	return 0;
+  int len = 0;
+  glGetShaderiv(luaL_checkinteger(lua, 1),
+    GL_INFO_LOG_LENGTH,
+    &len);
+  if (len > 0) {
+    char *info = (char*)malloc(len);
+    glGetProgramInfoLog(luaL_checkinteger(lua, 1),
+      len,
+      NULL,
+      info);
+    luaL_Buffer buffer;
+    luaL_buffinit(lua, &buffer);
+    luaL_addlstring(&buffer, (char*)info, len);
+    luaL_pushresult(&buffer);
+  } else {
+    lua_pushnil(lua);
+  }
+  return 1;
 }
 
 static int lua_glProgramPipelineInfoLog(lua_State *lua)
@@ -23016,8 +23033,8 @@ int luaL_opengl(lua_State *lua)
 		lua_pushstring(lua, "GetShaderInfoLog");
 		lua_pushcfunction(lua, lua_glGetShaderInfoLog);
 		lua_settable(lua, -3);
-		lua_pushstring(lua, "ProgramInfoLog");
-		lua_pushcfunction(lua, lua_glProgramInfoLog);
+		lua_pushstring(lua, "GetProgramInfoLog");
+		lua_pushcfunction(lua, lua_glGetProgramInfoLog);
 		lua_settable(lua, -3);
 		lua_pushstring(lua, "ProgramPipelineInfoLog");
 		lua_pushcfunction(lua, lua_glProgramPipelineInfoLog);

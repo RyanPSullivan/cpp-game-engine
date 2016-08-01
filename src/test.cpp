@@ -25,8 +25,6 @@
 #include <iostream>
 #include <assert.h>
 
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
-
 int CreateWindow(lua_State* L)
 {
     SDL_Surface *screen;
@@ -54,94 +52,18 @@ int CreateWindow(lua_State* L)
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 
-
-    GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
-
-    glUseProgram(programID);
-
-
     return 0;
 }
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path){
 
-	// Create the shaders
-	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// Read the Vertex Shader code from the file
-	std::string VertexShaderCode = "\n \
-		attribute vec3 vertexPosition_modelspace;\n \
-		void main(){gl_Position.xyz = vertexPosition_modelspace;gl_Position.w = 1.0;}";
-
-	// Read the Fragment shader code from the file
-	std::string FragmentShaderCode =
-		"\n \
-                void main(){gl_FragColor = vec4(0,1,0,0);}";
-
-	GLint Result = GL_FALSE;
-	int InfoLogLength;
-
-
-	// Compile Vertex Shader
-	printf("Compiling shader : %s\n", vertex_file_path);
-	char const * VertexSourcePointer = VertexShaderCode.c_str();
-	glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
-	glCompileShader(VertexShaderID);
-
-	// Check Vertex Shader
-	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-		printf("%s\n", &VertexShaderErrorMessage[0]);
-	}
-
-
-
-	// Compile Fragment Shader
-	printf("Compiling shader : %s\n", fragment_file_path);
-	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
-	glCompileShader(FragmentShaderID);
-
-	// Check Fragment Shader
-	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
-		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-		printf("%s\n", &FragmentShaderErrorMessage[0]);
-	}
-
-	// Link the program
-	printf("Linking program\n");
-	GLuint ProgramID = glCreateProgram();
-	glAttachShader(ProgramID, VertexShaderID);
-	glAttachShader(ProgramID, FragmentShaderID);
-	glLinkProgram(ProgramID);
-
-	// Check the program
-	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-	if ( InfoLogLength > 0 ){
-		std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-		printf("%s\n", &ProgramErrorMessage[0]);
-	}
-
-	glDetachShader(ProgramID, VertexShaderID);
-	glDetachShader(ProgramID, FragmentShaderID);
-
-	glDeleteShader(VertexShaderID);
-	glDeleteShader(FragmentShaderID);
-
-	return ProgramID;
-}
 
 int time_to_next_frame()
 {
 	return 16;
+}
+
+void onUpdate()
+{
+
 }
 
 static int traceback(lua_State *L) {
@@ -156,11 +78,14 @@ static int traceback(lua_State *L) {
 
 int main (int argc, char *argv[])
 {
-
   //load lua scripts
   FILE *file = fopen("lua/draw.lua", "rb");
 
-  if (file==NULL) {fputs ("File error",stderr); return 1;}
+  if (file==NULL)
+  {
+    fputs ("File error",stderr);
+    return 1;
+  }
 
   // obtain file size:
   fseek (file , 0 , SEEK_END);
@@ -169,11 +94,19 @@ int main (int argc, char *argv[])
 
   // allocate memory to contain the whole file:
   auto buffer = (char*) malloc (sizeof(char)*lSize);
-  if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
+  if (buffer == NULL)
+  {
+    fputs ("Memory error",stderr);
+    return 2;
+  }
 
   // copy the file into the buffer:
   auto result = fread (buffer,1,lSize,file);
-  if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
+  if (result != lSize)
+  {
+    fputs ("Reading error", stderr);
+    return 3;
+  }
 
   //close the file its now loaded into a memory buffer
   fclose (file);
@@ -182,14 +115,12 @@ int main (int argc, char *argv[])
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
   luaL_opengl(L);
-lua_pushcfunction(L, traceback);
+  lua_pushcfunction(L, traceback);
 
   //Register Create Window Function
   lua_register(L, "CreateWindow", CreateWindow);
 
   error = luaL_loadbuffer(L, buffer, strlen(buffer), "line");
-
-
   if (error)
   {
     fprintf(stderr, "loadbuffer %s", lua_tostring(L, -1));
@@ -197,9 +128,7 @@ lua_pushcfunction(L, traceback);
     return -1;
   }
 
-
   error = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
-
   if (error)
   {
     fprintf(stderr, "pcall %s", lua_tostring(L, -1));
@@ -208,8 +137,9 @@ lua_pushcfunction(L, traceback);
   }
 
 SDL_GL_SwapBuffers();
+
 #if EMSCRIPTEN
-	  //emscripten_set_main_loop(draw, 0, 1);
+	  //emscripten_set_main_loop(onUpdate, 0, 1);
 #else
   SDL_Event e;
   bool quit = false;
@@ -226,13 +156,10 @@ SDL_GL_SwapBuffers();
               quit = true;
           }
       }
-
-        //draw();
   }
 #endif
 
-SDL_Quit();
-
+  SDL_Quit();
 
   free(buffer);
   lua_close(L);
