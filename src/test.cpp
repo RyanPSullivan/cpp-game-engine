@@ -76,10 +76,11 @@ static int traceback(lua_State *L) {
     return 1;
 }
 
-int main (int argc, char *argv[])
+
+int loadLua( lua_State* L, const char* path )
 {
   //load lua scripts
-  FILE *file = fopen("lua/draw.lua", "rb");
+  FILE *file = fopen(path, "rb");
 
   if (file==NULL)
   {
@@ -111,7 +112,21 @@ int main (int argc, char *argv[])
   //close the file its now loaded into a memory buffer
   fclose (file);
 
-  int error;
+  int error = luaL_loadbuffer(L, buffer, strlen(buffer), path);
+  if (error)
+  {
+    fprintf(stderr, "loadbuffer %s", lua_tostring(L, -1));
+    lua_pop(L, 1);  /* pop error message from the stack */
+    return -1;
+  }
+
+  //The buffer has been handed off to lua now
+  free(buffer);
+  return 0;
+}
+
+int main (int argc, char *argv[])
+{
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
   luaL_opengl(L);
@@ -120,12 +135,10 @@ int main (int argc, char *argv[])
   //Register Create Window Function
   lua_register(L, "CreateWindow", CreateWindow);
 
-  error = luaL_loadbuffer(L, buffer, strlen(buffer), "line");
+  int error =   loadLua(L,"lua/draw.lua");
   if (error)
   {
-    fprintf(stderr, "loadbuffer %s", lua_tostring(L, -1));
-    lua_pop(L, 1);  /* pop error message from the stack */
-    return -1;
+    return error;
   }
 
   error = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
@@ -161,7 +174,6 @@ SDL_GL_SwapBuffers();
 
   SDL_Quit();
 
-  free(buffer);
   lua_close(L);
   return 0;
 }

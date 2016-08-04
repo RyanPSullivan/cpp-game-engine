@@ -1,5 +1,5 @@
--- Create The Native Window
-CreateWindow();
+matrix = dofile("lua/matrix.lua");
+
 
 function loadShader(code, type)
   -- Create the shader
@@ -95,6 +95,11 @@ function drawTriangle()
   gl.DrawArrays(gl.TRIANGLES, 0, 3); -- Starting from vertex 0; 3 vertices total -> 1 triangle
   gl.DisableVertexAttribArray(0);
 end
+
+mtx = matrix {{1,2},{3,4}}
+
+-- Create The Native Window
+CreateWindow();
 
 programID = loadShaders();
 
