@@ -1,41 +1,30 @@
 matrix = dofile("lua/matrix.lua");
+shaders = dofile("lua/shaders.lua");
 
 
-function loadShader(code, type)
-  -- Create the shader
-	shaderID = gl.CreateShader(type);
+function loadTextFromFile(filePath)
+	local file = io.open(filePath);
+	local result = "";
 
-	-- Compile  Shader
-	print("Compiling shader : ", code);
-	gl.ShaderSource(shaderID, code);
-	gl.CompileShader(shaderID);
-
-	-- Check Shader
-	result = gl.GetShaderiv(shaderID, gl.COMPILE_STATUS);
-	InfoLogLength = gl.GetShaderiv(shaderID, gl.INFO_LOG_LENGTH);
-
-	if InfoLogLength > 0 then
-    error = gl.GetShaderInfoLog(shaderID);
-    print("shader load error - ", error);
+	for line in file:lines() do
+			result = result .. line;
 	end
 
-  return shaderID;
+	return result;
 end
 
-function loadShaders()
+function loadShaders(vertexShaderPath, fragmentShaderPath)
+  vertexShaderCode = loadTextFromFile(vertexShaderPath);
 
-  vertexShaderCode = "\n \
-    attribute vec3 vertexPosition_modelspace;\n \
-    void main(){gl_Position.xyz = vertexPosition_modelspace;gl_Position.w = 1.0;}";
+  vertexShaderID = shaders.load(vertexShaderCode, gl.VERTEX_SHADER);
 
-  vertexShaderID = loadShader(vertexShaderCode, gl.VERTEX_SHADER);
+  fragmentShaderCode = loadTextFromFile(fragmentShaderPath);
 
-  fragmentShaderCode = "void main(){gl_FragColor = vec4(0,1,0,0);}";
-
-  fragmentShaderID = loadShader(fragmentShaderCode, gl.FRAGMENT_SHADER);
+  fragmentShaderID = shaders.load(fragmentShaderCode, gl.FRAGMENT_SHADER);
 
   -- Link the program
   print("Linking program\n");
+
   programID = gl.CreateProgram();
   gl.AttachShader(programID, vertexShaderID);
   gl.AttachShader(programID, fragmentShaderID);
@@ -101,7 +90,7 @@ mtx = matrix {{1,2},{3,4}}
 -- Create The Native Window
 CreateWindow();
 
-programID = loadShaders();
+programID = loadShaders("lua/shaders/vertex.shader", "lua/shaders/fragment.shader");
 
 gl.UseProgram(programID);
 
