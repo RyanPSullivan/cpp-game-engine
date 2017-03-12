@@ -61,9 +61,15 @@ int time_to_next_frame()
 	return 16;
 }
 
-void onUpdate()
+void init()
 {
 
+}
+
+void update()
+{
+  //invoke lua
+  SDL_GL_SwapBuffers();
 }
 
 static int traceback(lua_State *L) {
@@ -149,15 +155,16 @@ int main (int argc, char *argv[])
     return -1;
   }
 
-SDL_GL_SwapBuffers();
+
 
 #if EMSCRIPTEN
-	  //emscripten_set_main_loop(onUpdate, 0, 1);
+	  emscripten_set_main_loop(onUpdate, 0, 1);
 #else
   SDL_Event e;
   bool quit = false;
 
   while (!quit){
+      onUpdate();
       while (SDL_PollEvent(&e)){
           if (e.type == SDL_QUIT){
               quit = true;

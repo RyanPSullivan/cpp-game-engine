@@ -1,1 +1,2 @@
+CFLAGS+=-ferror-limit=10000
 LDFLAGS+=-lSDL -lGLEW -framework OpenGL `sdl-config --cflags --libs`
