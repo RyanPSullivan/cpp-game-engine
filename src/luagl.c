@@ -1446,7 +1446,7 @@ static int lua_glGetShaderiv(lua_State *lua)
 static int lua_glGetProgramiv(lua_State *lua)
 {
 	GLint params = 0;
-	glGetShaderiv(luaL_checkinteger(lua, 1),
+	glGetProgramiv(luaL_checkinteger(lua, 1),
 		luaL_checkinteger(lua, 2),
 		&params);
 	lua_pushinteger(lua, params);
@@ -1475,6 +1475,7 @@ static int lua_glGetShaderInfoLog(lua_State *lua)
 			len,
 			NULL,
 			info);
+
 		luaL_Buffer buffer;
 		luaL_buffinit(lua, &buffer);
 		luaL_addlstring(&buffer, (char*)info, len);
@@ -1491,17 +1492,22 @@ static int lua_glGetProgramInfoLog(lua_State *lua)
   glGetShaderiv(luaL_checkinteger(lua, 1),
     GL_INFO_LOG_LENGTH,
     &len);
-  if (len > 0) {
+
+  if (len > 0)
+  {
     char *info = (char*)malloc(len);
     glGetProgramInfoLog(luaL_checkinteger(lua, 1),
       len,
       NULL,
       info);
+
     luaL_Buffer buffer;
     luaL_buffinit(lua, &buffer);
     luaL_addlstring(&buffer, (char*)info, len);
     luaL_pushresult(&buffer);
-  } else {
+  }
+  else
+  {
     lua_pushnil(lua);
   }
   return 1;

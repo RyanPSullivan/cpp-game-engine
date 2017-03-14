@@ -55,6 +55,20 @@ int CreateWindow(lua_State* L)
     return 0;
 }
 
+int callLua(lua_State* L, char* function)
+{
+  lua_getglobal(L, function);
+
+  if (lua_pcall(L, 0, 0, 0) != 0)
+  {
+   fprintf(stderr, "pcall %s", lua_tostring(L, -1));
+   lua_pop(L, 1);  /* pop error message from the stack */
+   return -1;
+  }
+
+  return 0;
+}
+
 void update(lua_State* L)
 {
 
@@ -62,13 +76,7 @@ void update(lua_State* L)
 
 void draw(lua_State* L)
 {
-   lua_getglobal(L, "draw");
-
-   if (lua_pcall(L, 0, 0, 0) != 0)
-   {
-    fprintf(stderr, "pcall %s", lua_tostring(L, -1));
-    lua_pop(L, 1);  /* pop error message from the stack */
-   }
+   callLua(L, "draw");
 
   SDL_GL_SwapBuffers();
 }
@@ -140,6 +148,7 @@ int loadLua( lua_State* L, const char* path )
 
 int main (int argc, char *argv[])
 {
+  fprintf(stdout, "Starting Application\n" );
   lua_State *L = luaL_newstate();   /* opens Lua */
   luaL_openlibs(L); /*open the lua libs*/
   luaL_opengl(L);
@@ -157,9 +166,16 @@ int main (int argc, char *argv[])
   error = lua_pcall(L, 0, 0, lua_gettop(L) - 1);
   if (error)
   {
-    fprintf(stderr, "pcall %s", lua_tostring(L, -1));
-    lua_pop(L, 1);  /* pop error message from the stack */
-    return -1;
+   fprintf(stderr, "pcall %s", lua_tostring(L, -1));
+   lua_pop(L, 1);  /* pop error message from the stack */
+   return error;
+  }
+
+  error = callLua(L, "awake");
+
+  if (error)
+  {
+    return error;
   }
 
 
@@ -186,6 +202,7 @@ int main (int argc, char *argv[])
   }
 #endif
 
+  fprintf(stdout, "Exiting Application\n" );
   SDL_Quit();
 
   lua_close(L);

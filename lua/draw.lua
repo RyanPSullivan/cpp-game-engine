@@ -1,7 +1,6 @@
 matrix = dofile("lua/matrix.lua");
 shaders = dofile("lua/shaders.lua");
 
-
 function loadTextFromFile(filePath)
 	local file = io.open(filePath);
 	local result = "";
@@ -26,17 +25,28 @@ function loadShaders(vertexShaderPath, fragmentShaderPath)
   print("Linking program\n");
 
   programID = gl.CreateProgram();
+
+	print("Attaching shader " .. vertexShaderID);
   gl.AttachShader(programID, vertexShaderID);
+
+	print("Attaching shader " .. fragmentShaderID);
   gl.AttachShader(programID, fragmentShaderID);
+
+	print("Link Program " .. programID);
   gl.LinkProgram(programID);
+
 
   -- Check the program
   result = gl.GetProgramiv(programID, gl.LINK_STATUS);
-  infoLogLength = gl.GetProgramiv(programID, gl.INFO_LOG_LENGTH);
-  if infoLogLength > 0 then
-    error = gl.GetProgramInfoLog(programID);
-    print("program load error - ", error);
-  end
+
+	if result == gl.GL_FALSE then
+	  infoLogLength = gl.GetProgramiv(programID, gl.INFO_LOG_LENGTH);
+
+	  if infoLogLength > 0 then
+	    err = gl.GetProgramInfoLog(programID);
+	    error("program load error - " .. err);
+	  end
+	end
 
   gl.DetachShader(programID, vertexShaderID);
   gl.DetachShader(programID, fragmentShaderID);
@@ -85,11 +95,13 @@ function draw()
   gl.DisableVertexAttribArray(0);
 end
 
-mtx = matrix {{1,2},{3,4}}
+function awake()
+  mtx = matrix {{1,2},{3,4}}
 
--- Create The Native Window
-CreateWindow();
+  -- Create The Native Window
+  CreateWindow();
 
-programID = loadShaders("lua/shaders/vertex.shader", "lua/shaders/fragment.shader");
+  programID = loadShaders("lua/shaders/vertex.shader", "lua/shaders/fragment.shader");
 
-gl.UseProgram(programID);
+  gl.UseProgram(programID);
+end

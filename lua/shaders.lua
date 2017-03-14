@@ -18,12 +18,18 @@ function shaders.load(code, type)
 
 	-- Check Shader
 	result = gl.GetShaderiv(shaderID, gl.COMPILE_STATUS);
-	InfoLogLength = gl.GetShaderiv(shaderID, gl.INFO_LOG_LENGTH);
 
-	if InfoLogLength > 0 then
-    error = gl.GetShaderInfoLog(shaderID);
-    print("shader load error - ", error);
-	end
+  if result == gl.GL_FALSE then
+    err = gl.GetShaderInfoLog(shaderID);
+    error("shader compile error - " .. err);
+
+    infoLogLength = gl.GetShaderiv(shaderID, gl.INFO_LOG_LENGTH);
+
+    if infoLogLength > 0 then
+      err = err .. " " .. gl.GetShaderInfoLog(shaderID);
+      error("shader load error - " .. err);
+    end
+  end
 
   return shaderID;
 end
