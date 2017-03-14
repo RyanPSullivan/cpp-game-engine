@@ -47,7 +47,7 @@ function loadShaders(vertexShaderPath, fragmentShaderPath)
   return programID;
 end
 
-function drawTriangle()
+function draw()
   --DRAW BELOW
   local verts = {-1.0, -1.0, 0.0,
   1.0, -1.0, 0.0,
@@ -93,5 +93,3 @@ CreateWindow();
 programID = loadShaders("lua/shaders/vertex.shader", "lua/shaders/fragment.shader");
 
 gl.UseProgram(programID);
-
-drawTriangle();

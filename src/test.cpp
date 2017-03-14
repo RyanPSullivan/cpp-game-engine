@@ -55,21 +55,28 @@ int CreateWindow(lua_State* L)
     return 0;
 }
 
-
-int time_to_next_frame()
-{
-	return 16;
-}
-
-void init()
+void update(lua_State* L)
 {
 
 }
 
-void update()
+void draw(lua_State* L)
 {
-  //invoke lua
+   lua_getglobal(L, "draw");
+
+   if (lua_pcall(L, 0, 0, 0) != 0)
+   {
+    fprintf(stderr, "pcall %s", lua_tostring(L, -1));
+    lua_pop(L, 1);  /* pop error message from the stack */
+   }
+
   SDL_GL_SwapBuffers();
+}
+
+void tick(void* input)
+{
+  update((lua_State*)input);
+  draw((lua_State*)input);
 }
 
 static int traceback(lua_State *L) {
@@ -158,13 +165,13 @@ int main (int argc, char *argv[])
 
 
 #if EMSCRIPTEN
-	  emscripten_set_main_loop(onUpdate, 0, 1);
+	  emscripten_set_main_loop_arg(tick, L, 0, 1);
 #else
   SDL_Event e;
   bool quit = false;
 
   while (!quit){
-      onUpdate();
+      tick(L);
       while (SDL_PollEvent(&e)){
           if (e.type == SDL_QUIT){
               quit = true;
