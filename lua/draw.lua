@@ -57,11 +57,51 @@ function loadShaders(vertexShaderPath, fragmentShaderPath)
   return programID;
 end
 
+function update()
+
+end
+
 function draw()
-  --DRAW BELOW
-  local verts = {-1.0, -1.0, 0.0,
-  1.0, -1.0, 0.0,
-  0.0,  1.0, 0.0};
+
+  local verts = 
+  {
+    -1.0,-1.0,-1.0, 
+    -1.0,-1.0, 1.0,
+    -1.0, 1.0, 1.0, 
+    1.0, 1.0,-1.0, 
+    -1.0,-1.0,-1.0,
+    -1.0, 1.0,-1.0, 
+    1.0,-1.0, 1.0,
+    -1.0,-1.0,-1.0,
+    1.0,-1.0,-1.0,
+    1.0, 1.0,-1.0,
+    1.0,-1.0,-1.0,
+    -1.0,-1.0,-1.0,
+    -1.0,-1.0,-1.0,
+    -1.0, 1.0, 1.0,
+    -1.0, 1.0,-1.0,
+    1.0,-1.0, 1.0,
+    -1.0,-1.0, 1.0,
+    -1.0,-1.0,-1.0,
+    -1.0, 1.0, 1.0,
+    -1.0,-1.0, 1.0,
+    1.0,-1.0, 1.0,
+    1.0, 1.0, 1.0,
+    1.0,-1.0,-1.0,
+    1.0, 1.0,-1.0,
+    1.0,-1.0,-1.0,
+    1.0, 1.0, 1.0,
+    1.0,-1.0, 1.0,
+    1.0, 1.0, 1.0,
+    1.0, 1.0,-1.0,
+    -1.0, 1.0,-1.0,
+    1.0, 1.0, 1.0,
+    -1.0, 1.0,-1.0,
+    -1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,
+    -1.0, 1.0, 1.0,
+    1.0,-1.0, 1.0
+};
 
   gl.ClearColor( 0, 0, 1, 0 );
   gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -91,12 +131,12 @@ function draw()
   );
 
   -- Draw the triangle !
-  gl.DrawArrays(gl.TRIANGLES, 0, 3); -- Starting from vertex 0; 3 vertices total -> 1 triangle
+  gl.DrawArrays(gl.TRIANGLES, 0, #verts/3); -- Starting from vertex 0; 3 vertices total -> 1 triangle
   gl.DisableVertexAttribArray(0);
 end
 
 function awake()
-  mtx = matrix {{1,2},{3,4}}
+  mtx = matrix.perspective(math.rad(45),640/480,0.1,100);
 
   -- Create The Native Window
   CreateWindow();

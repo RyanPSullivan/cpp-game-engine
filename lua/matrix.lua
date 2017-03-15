@@ -83,6 +83,7 @@ API
 	matrix.tostring
 	matrix.transpose
 	matrix.type
+	matrix.perspective - added by Ryan Sullivan
 
 	See code and test_matrix.lua.
 
@@ -201,6 +202,33 @@ function matrix.add( m1, m2 )
 		end
 	end
 	return setmetatable( mtx, matrix_meta )
+end
+
+
+function matrix.perspective(fov, aspect, near, far)
+	local t = math.tan(fov / 2)
+	local mtx = 
+	{
+		1 / (aspect * t), 0, 0, 0,
+		0, 1 / t, 0, 0,
+		0, 0, -(far + near)/(far - near), -1,
+		0, 0, -(2 * far * near)/(far - near), 1 
+	}
+
+		return setmetatable( mtx, matrix_meta )
+end
+
+function matrix:lookat(eye, center, up)
+	local f = center:SubtractVector(eye):NormalizeInPlace()
+	local s = f:CrossMultiply(up):NormalizeInPlace()
+	local u = s:CrossMultiply(f):NormalizeInPlace()
+
+	return self:New(
+		s[1], s[2], s[3], 0,
+		u[1], u[2], u[3], 0,
+		-f[1], -f[2], -f[3], 0,
+		-s:DotMultiply(eye), -u:DotMultiply(eye), f:DotMultiply(eye), 1
+	)
 end
 
 --// matrix.sub ( m1 ,m2 )

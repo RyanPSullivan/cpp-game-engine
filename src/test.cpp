@@ -50,6 +50,7 @@ int CreateWindow(lua_State* L)
 	    exit(1);
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
 #endif
 
     return 0;
@@ -71,12 +72,12 @@ int callLua(lua_State* L, char* function)
 
 void update(lua_State* L)
 {
-
+  callLua(L, "update");
 }
 
 void draw(lua_State* L)
 {
-   callLua(L, "draw");
+  callLua(L, "draw");
 
   SDL_GL_SwapBuffers();
 }
